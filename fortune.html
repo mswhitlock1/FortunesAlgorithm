@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+
+    <!-- Fragment shader program -->
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+      varying lowp vec4 vColor;
+      void main(void) {
+        gl_FragColor = vColor;
+      }
+    </script>
+
+    <!-- Vertex shader program -->
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec4 aVertexColor;
+      varying lowp vec4 vColor;
+      attribute vec3 coordinates;
+      void main(void) {
+        gl_Position = vec4(coordinates, 1.0);
+        gl_PointSize = 7.5;
+        vColor = aVertexColor;
+      }
+    </script>
+</head>
+<body>
+<canvas width = "800" height = "800" id = "my_Canvas"></canvas>
+<br>
+<button id="begin" style="height:75px;width:250px;">Begin</button>
+<button id="nextEvent" style="height:75px;width:250px;margin-left:300px">Next Event</button>
+
+<script src="BinarySearchTree.js"></script>
+<script src="fortune.js"></script>
+</body>
+</html>
