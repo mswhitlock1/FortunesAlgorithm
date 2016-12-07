@@ -59,7 +59,6 @@ BinarySearchTree.prototype = {
     },
     calculate_sub_arcs: function(){
         var sub_arcs = Array();
-        var current = this._root;
         function helper(node) {
             if (node) {
                 if (node.type == 'point') {
@@ -67,7 +66,7 @@ BinarySearchTree.prototype = {
                     helper(node.right);
                 }
                 else {
-                    sub_arcs.push([current.a, current.m, current.n, current.min, current.max]);
+                    sub_arcs.push([node.a, node.m, node.n, node.min, node.max]);
                 }
             }
         }

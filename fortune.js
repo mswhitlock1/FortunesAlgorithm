@@ -189,7 +189,7 @@ function draw_parabola(parabola) {
     var y = n;
     var neg_Y = n;
 
-    while (a * Math.pow(neg_Y - n, 2) + m > -1.0 || a * Math.pow(y - n, 2) + m < 1.0) {
+    while (a * Math.pow(y - n, 2) + m > -1.0) {
         if (y + dY < parabola[4] && y > parabola[3]) {
             vertices = vertices.concat([a * Math.pow(y - n,  2) + m, y, 0.0]);
             vertices = vertices.concat([a * Math.pow(y + dY - n,  2) + m, y + dY, 0.0]);
