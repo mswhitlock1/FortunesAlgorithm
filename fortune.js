@@ -185,7 +185,7 @@ function draw_parabola(parabola) {
     var m = parabola[1];
     var n = parabola[2];
     var a = parabola[0];
-    var dY = 0.005;
+    var dY = 0.002;
     var y = n;
     var neg_Y = n;
 
@@ -299,42 +299,44 @@ next_event_button.addEventListener('click', function (event) {
     var parabolas = Array();
     num_voronoi_lines = 0;
     parabola_lines = 0;
-
     for (var i = 0; i < processed_sites.length; i++) {
-        if (site_complete[i]) parabolas.push([]);
-        else {
+        // if (site_complete[i]) parabolas.push([]);
+        // else {
             var new_parabola = calculate_parabola(processed_sites[i][0], processed_sites[i][1], vertices[0]);
-            //console.log(i);
             parabolas.push(new_parabola);
             beachline.updateParabola(i, new_parabola);
-        }
+       // }
     }
+    beachline.updateIntersections(parabolas);
+
     if (current_event && current_event[2] === 0.0) {
         beachline.site_split(current_event[1], processed_sites.length);
+        parabolas.push([0, current_event[0], current_event[1], current_event[1], current_event[1]]);
     }
     var counter = 0;
-    for (var i = 0; i < parabolas.length; i++) {
-        for (var j = i + 1; j < parabolas.length; j++) {
-            if (i != j && !site_complete[i] && !site_complete[j]) {
-                var return_val = calculate_intersection(parabolas[i], parabolas[j]);
-
-                // parabolas[i] -> leftmost.  parabolas[j] -> rightmost
-                beachline.updateIntersection(i, j, return_val[2], return_val[4], return_val[3], return_val[5]);
-                if (i >= 1 && site_complete[i - 1]) {
-                    if (return_val[4] > return_val[5]) {
-                        voronoi_lines[counter][2] = return_val[4];
-                        voronoi_lines[counter][3] = return_val[2];
-                    } else {
-                        voronoi_lines[counter][2] = return_val[5];
-                        voronoi_lines[counter][3] = return_val[3];
-                    }
-                } else {
-                    voronoi_lines[counter] = [return_val[4], return_val[2], return_val[5], return_val[3]];
-                }
-            }
-            counter++;
-        }
-    }
+    var end = parabolas.length + 10 * current_event[2];
+    // for (var i = 0; i < end; i++) {
+    //     for (var j = i + 1; j < end; j++) {
+    //         if (i != j && !site_complete[i] && !site_complete[j]) {
+    //             var return_val = calculate_intersection(parabolas[i], parabolas[j]);
+    //
+    //             // parabolas[i] -> leftmost.  parabolas[j] -> rightmost
+    //             //beachline.updateIntersection(i, j, return_val[2], return_val[4], return_val[3], return_val[5]);
+    //             if (i >= 1 && site_complete[i - 1]) {
+    //                 if (return_val[4] > return_val[5]) {
+    //                     voronoi_lines[counter][2] = return_val[4];
+    //                     voronoi_lines[counter][3] = return_val[2];
+    //                 } else {
+    //                     voronoi_lines[counter][2] = return_val[5];
+    //                     voronoi_lines[counter][3] = return_val[3];
+    //                 }
+    //             } else {
+    //                 voronoi_lines[counter] = [return_val[4], return_val[2], return_val[5], return_val[3]];
+    //             }
+    //         }
+    //         counter++;
+    //     }
+    // }
     // Check for a circle event
     if (current_event && processed_sites.length > 1) {
         if (current_event[2] === 0.0) {
@@ -342,15 +344,14 @@ next_event_button.addEventListener('click', function (event) {
             last_three_sites.push(current_event);
 
             // Calculate the line from the last two points
-            var parabola_0 = parabolas[parabolas.length - 2];
-            var parabola_1 = parabolas[parabolas.length - 1];
+            var parabola_0 = parabolas[parabolas.length - 3];
+            var parabola_1 = parabolas[parabolas.length - 2];
             var return_val_0 = calculate_intersection(parabola_0, parabola_1);
             var m_0 = (return_val_0[2] - return_val_0[3]) /
                 (( parabola_0[0] * Math.pow(return_val_0[2] - parabola_0[2], 2) + parabola_0[1]) -
                 ( parabola_0[0] * Math.pow(return_val_0[3] - parabola_0[2], 2) + parabola_0[1]));
             var x_0 = parabola_0[0] * Math.pow(return_val_0[3] - parabola_0[2], 2) + parabola_0[1];
             var y_0 = return_val_0[3];
-
             // Calculate the line between the current event and the last event
             var m_1 = (last_three_sites[1][0] - last_three_sites[2][0]) / (last_three_sites[2][1] - last_three_sites[1][1]);
             var x_1 = (last_three_sites[1][0] + last_three_sites[2][0]) / 2;
@@ -372,18 +373,10 @@ next_event_button.addEventListener('click', function (event) {
                 return b[0] - a[0];
             });
         } else {
-            var return_val_0 = calculate_intersection(parabolas[parabolas.length - 3], parabolas[parabolas.length - 2]);
-            voronoi_lines[voronoi_lines.length - 3] = [return_val_0[4], return_val_0[2], return_val_0[5], return_val_0[3]];
-
-            var return_val_1 = calculate_intersection(parabolas[parabolas.length - 3], parabolas[parabolas.length - 1]);
-            voronoi_lines[voronoi_lines.length - 2] = [return_val_1[4], return_val_1[2], return_val_1[5], return_val_1[3]];
-
-            voronoi_lines[voronoi_lines.length - 1][0] = current_event[3][0];
-            voronoi_lines[voronoi_lines.length - 1][1] = current_event[3][1];
-
-            site_complete[parabolas.length - 3] = true;
+            beachline.circle_split(current_event[3][1]);
         }
     }
+    //beachline.draw_lines();
     for (var i = 0; i < voronoi_lines.length; i++) {
         draw_voronoi_line(voronoi_lines[i]);
     }
@@ -391,6 +384,7 @@ next_event_button.addEventListener('click', function (event) {
     for (var i = 0; i < sub_arcs.length; i++) {
         draw_parabola(sub_arcs[i]);
     }
+
     render();
 });
 
